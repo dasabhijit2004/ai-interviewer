@@ -1,3 +1,5 @@
+'use client'
+
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import {
@@ -7,25 +9,57 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
-import React from 'react'
+import React from 'react' // No more useState or useEffect needed here
 import { InterviewOptions } from '@/services/Constants'
 import { Button } from '@/components/ui/button'
 import { ArrowRight } from 'lucide-react'
 
-const Form = () => {
+// Receive the full formData object and the handler from the parent
+const Form = ({ formData, onHandleInputChange, onSubmit }) => {
+
+    const addInterviewtype = (optionType) => {
+        const currentTypes = formData.type || [];
+        const isAlreadyAdded = currentTypes.includes(optionType);
+        
+        let newTypes;
+
+        if (!isAlreadyAdded) {
+            // Add the new type
+            newTypes = [...currentTypes, optionType];
+        } else {
+            // Remove the type
+            newTypes = currentTypes.filter(item => item !== optionType);
+        }
+
+        // Directly call the parent's handler to update the state
+        onHandleInputChange('type', newTypes);
+    }
+
     return (
         <div className='bg-white p-4 rounded-xl'>
             <div className='py-3'>
                 <h4 className='font-semibold'>Job Position</h4>
-                <Input placeholder="e.g. Full Stack Developer" />
+                <Input 
+                    placeholder="e.g. Full Stack Developer"
+                    value={formData.jobPosition} // Controlled input
+                    onChange={(event) => onHandleInputChange('jobPosition', event.target.value)}
+                />
             </div>
             <div className='py-3'>
                 <h4 className='font-semibold'>Job Description</h4>
-                <Textarea placeholder="Enter detailed job description" className='h-28 resize-none no-scroll' />
+                <Textarea 
+                    placeholder="Enter detailed job description" 
+                    className='h-28 resize-none no-scroll'
+                    value={formData.jobDescription} // Controlled input
+                    onChange={(event) => onHandleInputChange('jobDescription', event.target.value)}
+                />
             </div>
             <div className='py-3'>
                 <h4 className='font-semibold'>Interview Duration</h4>
-                <Select>
+                <Select 
+                    onValueChange={(value) => onHandleInputChange('duration', value)}
+                    value={formData.duration} // Controlled input
+                >
                     <SelectTrigger className="w-full">
                         <SelectValue placeholder="Select interview duration" />
                     </SelectTrigger>
@@ -42,7 +76,12 @@ const Form = () => {
                 <h4 className='font-semibold'>Interview Type</h4>
                 <div className='flex flex-wrap gap-5'>
                     {InterviewOptions.map((option, index) => (
-                        <div className='flex items-center gap-2 border border-gray-200 rounded-xl p-2 px-4 hover:bg-secondary'>
+                        <div 
+                            key={index} 
+                            // Check against the prop directly
+                            className={`flex items-center gap-2 border border-gray-200 rounded-xl p-2 px-4 hover:bg-secondary cursor-pointer ${formData.type.includes(option.type) && 'bg-blue-100 text-blue-500'}`} 
+                            onClick={() => addInterviewtype(option.type)}
+                        >
                             <option.icon className='h-4 w-4' />
                             <p>{option.type}</p>
                         </div>
@@ -50,10 +89,11 @@ const Form = () => {
                 </div>
             </div>
             <div className="mt-7 flex justify-end">
-            <Button>Generate Questions<ArrowRight /></Button>
+                {/* Call the onSubmit prop */}
+                <Button onClick={onSubmit}>Generate Questions<ArrowRight /></Button>
             </div>
         </div>
     )
 }
 
-export default Form
+export default Form;
