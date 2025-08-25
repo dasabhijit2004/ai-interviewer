@@ -11,7 +11,7 @@ import { useState } from 'react'
 import toast from 'react-hot-toast'
 import { v4 as uuidv4 } from 'uuid'
 
-const QuestionsList = ({ formData }) => {
+const QuestionsList = ({ formData, onCreateLink }) => {
 
   const [loading, setLoading] = useState(true)
 
@@ -62,7 +62,8 @@ const QuestionsList = ({ formData }) => {
       .select()
 
     setSaveLoading(false);
-    console.log(data)
+    
+    onCreateLink(interview_id)
   }
 
   return (
@@ -83,9 +84,9 @@ const QuestionsList = ({ formData }) => {
             </div>
           ))}
           <div className="mt-7 flex justify-end">
-            <Button onClick={() => onFinish()} disabled = {save}>
+            <Button onClick={() => onFinish()} disabled = {saveLoading}>
               {saveLoading && <Loader2 className='animate-spin' />}
-              Finish<ArrowRight />
+              Create Interview <ArrowRight />
             </Button>
           </div>
         </div>}

@@ -7,10 +7,11 @@ import Form from './_components/Form'
 import { Progress } from '@/components/ui/progress'
 import QuestionsList from './_components/QuestionsList'
 import toast from 'react-hot-toast'
+import InterviewLink from './_components/InterviewLink'
 
 const Page = () => {
   const router = useRouter();
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState(3);
 
   // 1. Initialize formData with a default structure to prevent errors
   const [formData, setFormData] = useState({
@@ -19,6 +20,8 @@ const Page = () => {
     duration: '',
     type: [],
   });
+
+  const [interviewId, setInterviewId] = useState();
 
   // 2. Use useEffect to correctly log the state after it updates
   useEffect(() => {
@@ -41,6 +44,11 @@ const Page = () => {
     } else {
       toast.error("All fields required")
     }
+  };
+
+  const onCreateLink = (interview_id) => {
+    setInterviewId(interview_id);
+    setStep(3);
   };
 
   return (
@@ -66,7 +74,11 @@ const Page = () => {
 
       {/* Placeholder for Step 2 */}
       {step === 2 && (
-        <QuestionsList formData={formData} />
+        <QuestionsList formData={formData} onCreateLink={(interview_id) => onCreateLink(interview_id)} />
+      )}
+
+      {step === 3 && (
+        <InterviewLink interview_id={interviewId} formData={formData} />
       )}
     </div>
   );
